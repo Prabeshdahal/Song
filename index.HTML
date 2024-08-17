@@ -1,0 +1,114 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Welcome to Swaad Darbar</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f9f9f9;
+            text-align: center;
+            padding: 50px;
+        }
+        h1 {
+            color: #ff6347;
+        }
+        input {
+            padding: 10px;
+            font-size: 18px;
+            margin: 20px 0;
+            width: 300px;
+        }
+        button {
+            padding: 10px 20px;
+            font-size: 18px;
+            background-color: #ff6347;
+            color: white;
+            border: none;
+            cursor: pointer;
+            margin: 5px;
+        }
+        button:hover {
+            background-color: #ff4500;
+        }
+        #controls {
+            margin-top: 20px;
+            display: none; /* Hidden by default, shown when the song starts playing */
+        }
+    </style>
+</head>
+<body>
+    <h1>Welcome to Swaad Darbar</h1>
+    <p>Please enter your name:</p>
+    <input type="text" id="customerName" placeholder="Enter your name here" />
+    <br>
+    <button onclick="greetCustomer()">Greet</button>
+
+    <div id="controls">
+        <button onclick="pauseSong()">Pause</button>
+        <button onclick="playSong()">Play</button>
+    </div>
+
+    <audio id="welcomeSong" src="song.mp3"></audio>
+
+    <script>
+        function greetCustomer() {
+            const name = document.getElementById('customerName').value;
+            if (name) {
+                // Say "Dear" first without any pause
+                const dearUtterance = new SpeechSynthesisUtterance('Dear ' + name);
+                dearUtterance.lang = 'en-US';
+                dearUtterance.rate = 1;
+                dearUtterance.pitch = 1;
+                dearUtterance.volume = 1.5;
+
+                dearUtterance.onend = function() {
+                    const welcomeSong = document.getElementById('welcomeSong');
+                    welcomeSong.play();
+
+                    // Show the pause and play controls
+                    document.getElementById('controls').style.display = 'block';
+
+                    // Schedule name pronunciation at 0:10
+                    scheduleNamePronunciation(name, 10); // 0:10
+                };
+
+                speechSynthesis.speak(dearUtterance);
+            } else {
+                alert('Please enter your name!');
+            }
+        }
+
+        function scheduleNamePronunciation(name, timeInSeconds) {
+            setTimeout(() => {
+                speakNameDuringSong(name);
+            }, timeInSeconds * 1000); // Convert seconds to milliseconds
+        }
+
+        function speakNameDuringSong(name) {
+            const voices = speechSynthesis.getVoices();
+            const sweetGirlVoice = voices.find(voice => voice.name.toLowerCase().includes('female') || voice.name.toLowerCase().includes('girl'));
+
+            const nameUtterance = new SpeechSynthesisUtterance(name);
+            nameUtterance.voice = sweetGirlVoice;
+            nameUtterance.lang = 'en-US';
+            nameUtterance.rate = 1; // Normal pronunciation
+            nameUtterance.pitch = 1; // Normal pitch
+            nameUtterance.volume = 1.5; // Louder pronunciation
+
+            speechSynthesis.speak(nameUtterance);
+        }
+
+        function pauseSong() {
+            const welcomeSong = document.getElementById('welcomeSong');
+            welcomeSong.pause();
+        }
+
+        function playSong() {
+            const welcomeSong = document.getElementById('welcomeSong');
+            welcomeSong.play();
+        }
+    </script>
+</body>
+</html>
